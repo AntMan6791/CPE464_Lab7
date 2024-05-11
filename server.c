@@ -63,15 +63,23 @@ int checkArgs(int argc, char *argv[])
 	// Checks args and returns port number
 	int portNumber = 0;
 
-	if (argc > 2)
+	if (argc > 3 || argc < 2)
 	{
-		fprintf(stderr, "Usage %s [optional port number]\n", argv[0]);
+		fprintf(stderr, "Usage: %s error-rate [optional port number]\n", argv[0]);
 		exit(-1);
 	}
-	
-	if (argc == 2)
+
+	// check error rate
+	float errorRate = atof(argv[1]);
+	if((errorRate <= 0) || (errorRate >= 1)){
+		printf("Error Rate value must be between 0 and 1\n");
+		exit(-1)
+	}
+
+	// if optional port number is provided
+	if (argc == 3)
 	{
-		portNumber = atoi(argv[1]);
+		portNumber = atoi(argv[2]);
 	}
 	
 	return portNumber;

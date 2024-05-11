@@ -99,10 +99,17 @@ int checkArgs(int argc, char * argv[])
         int portNumber = 0;
 	
         /* check command line arguments  */
-	if (argc != 3)
+	if (argc != 4)
 	{
-		printf("usage: %s host-name port-number \n", argv[0]);
+		printf("usage: %s error-rate host-name port-number \n", argv[0]);
 		exit(1);
+	}
+
+	// check error rate (assumes it is a number)
+	float errorRate = atof(argv[1]);
+	if((errorRate <= 0) || (errorRate >= 1)){
+		printf("Error Rate value must be between 0 and 1\n");
+		exit(1)
 	}
 	
 	portNumber = atoi(argv[2]);
