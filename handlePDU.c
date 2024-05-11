@@ -34,7 +34,7 @@ int createPDU(uint8_t * pduBuffer, uint32_t sequenceNumber, uint8_t flag, uint8_
     memcpy(pduBuffer + 7, payload, payloadLen); // add payload
     
     // add checksum
-    uint16_t checksum = in_cksum((unsigned short*) pduBuffer, pduLength);
+    checksum = in_cksum((unsigned short*) pduBuffer, pduLength);
     memcpy(pduBuffer + 4, &checksum, 2);
 
     // return pduLength
@@ -66,6 +66,6 @@ void printPDU(uint8_t * aPDU, int pduLength){
     memcpy(payload, aPDU + 7, payloadLen);
     printf("Payload: %s\n", payload); // assume payload is string
 
-    printf("Payload Length: %d\n", payloadLen);
+    printf("Payload Length: %d\n\n", payloadLen);
 
 }

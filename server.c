@@ -43,7 +43,6 @@ void processClient(int socketNum)
 	uint8_t pduBuffer[MAXBUF + 1];	  
 	struct sockaddr_in6 client;		
 	int clientAddrLen = sizeof(client);	
-	char pduBuffer[MAXBUF + 1];
 	uint8_t flag = 1;
 
 	uint32_t sequenceNumber = 0;
@@ -62,12 +61,12 @@ void processClient(int socketNum)
 		// just for fun send back to client number of bytes received
 		sprintf(buffer, "bytes: %d", dataLen);
 		
-		int pduLen = createPDU(pduBuffer, sequenceNumber, flag, buffer, strlen(buffer) + 1);
+		int pduLen = createPDU(pduBuffer, sequenceNumber, flag, (uint8_t *)buffer, strlen(buffer) + 1);
 
 		//increment sequence number
 		sequenceNumber += 1;
 		
-		safeSendto(socketNum, buffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
+		safeSendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
 
 	}
 }
@@ -87,7 +86,7 @@ int checkArgs(int argc, char *argv[])
 	float errorRate = atof(argv[1]);
 	if((errorRate <= 0) || (errorRate >= 1)){
 		printf("Error Rate value must be between 0 and 1\n");
-		exit(-1)
+		exit(-1);
 	}
 
 	// if optional port number is provided

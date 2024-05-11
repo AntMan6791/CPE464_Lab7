@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 	
 	portNumber = checkArgs(argc, argv);
 	
-	socketNum = setupUdpClientToServer(&server, argv[1], portNumber);
+	socketNum = setupUdpClientToServer(&server, argv[2], portNumber);
 	
 	talkToServer(socketNum, &server);
 	
@@ -63,7 +63,7 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 		printf("Sending: %s with len: %d\n", inBuffer,dataLen);
 	
 		// create PDU to send
-		pduLen = createPDU(pduBuffer, sequenceNumber, flag, inBuffer, dataLen);
+		pduLen = createPDU(pduBuffer, sequenceNumber, flag, (uint8_t *) inBuffer, dataLen);
 
 		//increment sequence number
 		sequenceNumber += 1;
@@ -124,10 +124,10 @@ int checkArgs(int argc, char * argv[])
 	float errorRate = atof(argv[1]);
 	if((errorRate <= 0) || (errorRate >= 1)){
 		printf("Error Rate value must be between 0 and 1\n");
-		exit(1)
+		exit(1);
 	}
 	
-	portNumber = atoi(argv[2]);
+	portNumber = atoi(argv[3]);
 		
 	return portNumber;
 }
