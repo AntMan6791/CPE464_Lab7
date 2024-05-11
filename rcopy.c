@@ -18,6 +18,7 @@
 #include "gethostbyname.h"
 #include "networks.h"
 #include "safeUtil.h"
+#include "handlePDU.h"
 
 #define MAXBUF 80
 
@@ -50,6 +51,7 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 	int dataLen = 0; 
 	char buffer[MAXBUF+1];
 	
+	int sequenceNumber = 0
 	buffer[0] = '\0';
 	while (buffer[0] != '.')
 	{
@@ -57,6 +59,9 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 
 		printf("Sending: %s with len: %d\n", buffer,dataLen);
 	
+		// create PDU to send
+		createPDU(uint8_t * buffer, uint32_t sequenceNumber, uint8_t flag, uint8_t * payload, int payloadLen);
+
 		safeSendto(socketNum, buffer, dataLen, 0, (struct sockaddr *) server, serverAddrLen);
 		
 		safeRecvfrom(socketNum, buffer, MAXBUF, 0, (struct sockaddr *) server, &serverAddrLen);

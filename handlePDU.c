@@ -21,15 +21,15 @@ int createPDU(uint8_t * pduBuffer, uint32_t sequenceNumber, uint8_t flag, uint8_
 void printPDU(uint8_t * aPDU, int pduLength);
 
 int createPDU(uint8_t * pduBuffer, uint32_t sequenceNumber, uint8_t flag, uint8_t * payload, int payloadLen){
-    // note expects pdu buffer to be zeroed
     int pduLength = payloadLen + 7;
+    uint16_t checksum = 0;
 
     // Sequence number if net order
     uint32_t netSeqNum = htonl(sequenceNumber);
     
     // put data into the pduBuffer
     memcpy(pduBuffer, &netSeqNum, 4); // add sequence num
-    // reserve 2 bytes for checksu,
+    memcpy(pduBuffer + 4, &checksum, 2);// reserve 2 bytes for checksu,
     memcpy(pduBuffer + 6, &flag, 1); // add flag
     memcpy(pduBuffer + 7, payload, payloadLen); // add payload
     
