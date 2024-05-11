@@ -14,6 +14,8 @@
 #include "networks.h"
 #include "safeUtil.h"
 #include "handlePDU.h"
+#include "cpe464.h"
+
 
 #define MAXBUF 80
 
@@ -26,6 +28,9 @@ int main ( int argc, char *argv[]  )
 	int portNumber = 0;
 
 	portNumber = checkArgs(argc, argv);
+
+	float errorRate = atof(argv[1]);
+	sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
 		
 	socketNum = udpServerSetup(portNumber);
 
@@ -66,7 +71,8 @@ void processClient(int socketNum)
 		//increment sequence number
 		sequenceNumber += 1;
 		
-		safeSendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
+		//sendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
+		sendtoErr(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
 
 	}
 }

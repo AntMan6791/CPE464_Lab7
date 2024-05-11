@@ -19,6 +19,7 @@
 #include "networks.h"
 #include "safeUtil.h"
 #include "handlePDU.h"
+#include "cpe464.h"
 
 #define MAXBUF 80
 
@@ -37,6 +38,9 @@ int main (int argc, char *argv[])
 	
 	socketNum = setupUdpClientToServer(&server, argv[2], portNumber);
 	
+	float errorRate = atof(argv[1]);
+	sendErr_init(errorRate, DROP_ON, FLIP_ON, DEBUG_ON, RSEED_OFF);
+
 	talkToServer(socketNum, &server);
 	
 	close(socketNum);
@@ -68,7 +72,8 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 		//increment sequence number
 		sequenceNumber += 1;
 
-		safeSendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) server, serverAddrLen);
+		//sendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) server, serverAddrLen);
+		sendtoErr(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) server, serverAddrLen);
 		
 		// after this call, pduBuffer will have the server's pdu
 		int recvLen = safeRecvfrom(socketNum, pduBuffer, MAXBUF, 0, (struct sockaddr *) server, &serverAddrLen);
@@ -78,7 +83,6 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 		printf("Server with ip: %s and port %d said it received %s\n", ipString, ntohs(server->sin6_port), pduBuffer);
 	    
 		// call printPDU for testing
-		printf("Call printPDU()\n\n");
 		printPDU(pduBuffer, recvLen);
 	}
 }
