@@ -39,22 +39,35 @@ int main ( int argc, char *argv[]  )
 void processClient(int socketNum)
 {
 	int dataLen = 0; 
-	char buffer[MAXBUF + 1];	  
+	char buffer[MAXBUF + 1];
+	uint8_t pduBuffer[MAXBUF + 1];	  
 	struct sockaddr_in6 client;		
 	int clientAddrLen = sizeof(client);	
-	
+	char pduBuffer[MAXBUF + 1];
+	uint8_t flag = 1;
+
+	uint32_t sequenceNumber = 0;
 	buffer[0] = '\0';
 	while (buffer[0] != '.')
 	{
-		dataLen = safeRecvfrom(socketNum, buffer, MAXBUF, 0, (struct sockaddr *) &client, &clientAddrLen);
+		dataLen = safeRecvfrom(socketNum, pduBuffer, MAXBUF, 0, (struct sockaddr *) &client, &clientAddrLen);
 	
 		printf("Received message from client with ");
 		printIPInfo(&client);
-		printf(" Len: %d \'%s\'\n", dataLen, buffer);
+		//printf(" Len: %d \'%s\'\n", dataLen, buffer);
+		
+		// call printPDU for testing
+		printPDU(pduBuffer, dataLen);
 
 		// just for fun send back to client number of bytes received
 		sprintf(buffer, "bytes: %d", dataLen);
-		safeSendto(socketNum, buffer, strlen(buffer)+1, 0, (struct sockaddr *) & client, clientAddrLen);
+		
+		int pduLen = createPDU(pduBuffer, sequenceNumber, flag, buffer, strlen(buffer) + 1);
+
+		//increment sequence number
+		sequenceNumber += 1;
+		
+		safeSendto(socketNum, buffer, pduLen, 0, (struct sockaddr *) & client, clientAddrLen);
 
 	}
 }

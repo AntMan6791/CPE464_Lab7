@@ -48,28 +48,38 @@ void talkToServer(int socketNum, struct sockaddr_in6 * server)
 {
 	int serverAddrLen = sizeof(struct sockaddr_in6);
 	char * ipString = NULL;
-	int dataLen = 0; 
-	char buffer[MAXBUF+1];
-	
-	int sequenceNumber = 0
-	buffer[0] = '\0';
-	while (buffer[0] != '.')
-	{
-		dataLen = readFromStdin(buffer);
+	int dataLen = 0;
+	int pduLen = 0;
+	char inBuffer[MAXBUF+1];
+	uint8_t pduBuffer[MAXBUF+1];
+	uint8_t flag = 1;
 
-		printf("Sending: %s with len: %d\n", buffer,dataLen);
+	uint32_t sequenceNumber = 0;
+	inBuffer[0] = '\0';
+	while (inBuffer[0] != '.')
+	{
+		dataLen = readFromStdin(inBuffer);
+
+		printf("Sending: %s with len: %d\n", inBuffer,dataLen);
 	
 		// create PDU to send
-		createPDU(uint8_t * buffer, uint32_t sequenceNumber, uint8_t flag, uint8_t * payload, int payloadLen);
+		pduLen = createPDU(pduBuffer, sequenceNumber, flag, inBuffer, dataLen);
 
-		safeSendto(socketNum, buffer, dataLen, 0, (struct sockaddr *) server, serverAddrLen);
+		//increment sequence number
+		sequenceNumber += 1;
+
+		safeSendto(socketNum, pduBuffer, pduLen, 0, (struct sockaddr *) server, serverAddrLen);
 		
-		safeRecvfrom(socketNum, buffer, MAXBUF, 0, (struct sockaddr *) server, &serverAddrLen);
+		// after this call, pduBuffer will have the server's pdu
+		int recvLen = safeRecvfrom(socketNum, pduBuffer, MAXBUF, 0, (struct sockaddr *) server, &serverAddrLen);
 		
 		// print out bytes received
 		ipString = ipAddressToString(server);
-		printf("Server with ip: %s and port %d said it received %s\n", ipString, ntohs(server->sin6_port), buffer);
-	      
+		printf("Server with ip: %s and port %d said it received %s\n", ipString, ntohs(server->sin6_port), pduBuffer);
+	    
+		// call printPDU for testing
+		printf("Call printPDU()\n\n");
+		printPDU(pduBuffer, recvLen);
 	}
 }
 
