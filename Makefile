@@ -12,7 +12,7 @@ LIBS =
 OBJS = networks.o gethostbyname.o pollLib.o safeUtil.o handlePDU.o
 
 #uncomment next two lines if your using sendtoErr() library
-LIBS += libcpe464.a.b.a -lstdc++ -ldl
+LIBS += libcpe464.2.21.a -lstdc++ -ldl
 CFLAGS += -D__LIBCPE464_
 
 
