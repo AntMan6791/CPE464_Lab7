@@ -126,7 +126,7 @@ int checkArgs(int argc, char * argv[])
 
 	// check error rate (assumes it is a number)
 	float errorRate = atof(argv[1]);
-	if((errorRate <= 0) || (errorRate >= 1)){
+	if((errorRate < 0) || (errorRate >= 1)){
 		printf("Error Rate value must be between 0 and 1\n");
 		exit(1);
 	}
